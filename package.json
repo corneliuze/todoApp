@@ -1,0 +1,22 @@
+{
+  "name": "todoapp",
+  "version": "1.0.0",
+  "description": "a simple api web app to store list of user's todo using node.js, mongodb and mongoose",
+  "main": "app.js",
+  "scripts": {
+    "test": "test-watch"
+  },
+  "author": "falaycornelius@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mongodb": "^3.2.2",
+    "mongoose": "^5.4.19"
+  },
+  "devDependencies": {
+    "expect": "^24.5.0",
+    "mocha": "^6.0.2",
+    "supertest": "^4.0.2"
+  }
+}
