@@ -1,4 +1,5 @@
 const express = require('express');
+const _ = require('lodash');
 const bodyParser = require('body-parser');
 const {Todo} = require('./model/todos');
 const{User} = require('./model/users');
@@ -72,18 +73,46 @@ app.delete('/todos/:id', (req, res) =>{
             res.status(404).send();
         }
         res.send({todo});
-    });
+    }).catch((e) =>{
+        res.status(400).send();
+    })
 });
 
-app.post('users', (req, res) =>{
-    const user = new User({
-        email : req.body.text
+app.patch('/todos/:id',(req, res) =>{
+    var id = req.params.id;
+    var body = _.pick(req.body, ['text', 'completed']);
+    if(!ObjectID.isValid()){
+        console.log ("yeah man")
+       return    res.status(404).send();
+    }
+    if(_.isBoolean(body.completed) && body.completed){
+        body.completedAt = new Date().getTime();
+    }else{
+        body.completed = false,
+        body.completedAt = null
+    }
+    Todo.findByIdAndUpdate(id, {set : body}, {new : true}).then((todo) => {
+        if(!todo){
+            console.log("no todo db")
+           return  res.status(404).send();
+
+        }
+        res.send(todo);
+    }).catch((e) =>{
+        res.status(400).send(e);
     });
-    user.save().then((doc) =>{
-        res.send(doc);
-    }, (err) =>{
-        res.status(400).send(err);
-    });
+
+});
+
+app.post('/users', (req, res) =>{
+    var body = _.pick([req.body, 'email', 'password']);
+      var user = new User(body);
+
+      user.save().then((user) =>{
+           res.send(user)
+      }).catch((e) =>{
+          res.status(400).send(e);
+      })
 });
 
 app.listen(port, ()=>{
