@@ -56,6 +56,18 @@ app.post('/users', (req, res) => {
         })
 });
 
+app.post('/users/login', (req, res) =>{
+        var ok = UserModel.find({email : req.body.email});
+        if(ok.length < 1){
+            res.send({
+                code : 400,
+                message :'user not found, sign up'
+            });
+        }else{
+            
+        }
+});
+
 
 app.post('/todos', (req, res) => {
     console.log(req.body.text)
@@ -119,17 +131,19 @@ app.delete('/todos/:id', (req, res) => {
 app.patch('/todos/:id', (req, res) => {
     var id = req.params.id;
     var body = _.pick(req.body, ['text', 'completed']);
-    if (!ObjectID.isValid()) {
-        console.log("yeah man")
+    if (!ObjectID.isValid(id)) {
+        console.log("yeah man", id)
         return res.status(404).send();
     }
+    console.log('hey i got here, davido');
     if (_.isBoolean(body.completed) && body.completed) {
         body.completedAt = new Date().getTime();
+    
     } else {
         body.completed = false,
             body.completedAt = null
     }
-    Todo.findByIdAndUpdate(id, { set: body }, { new: true }).then((todo) => {
+    Todo.findByIdAndUpdate(id, {$set: body }, { new: true }).then((todo) => {
         if (!todo) {
             console.log("no todo db")
             return res.status(404).send();
@@ -137,6 +151,7 @@ app.patch('/todos/:id', (req, res) => {
         }
         res.send(todo);
     }).catch((e) => {
+        console.log('the error', e);
         res.status(400).send('fuckup bro');
     });
 

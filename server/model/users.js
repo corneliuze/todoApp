@@ -40,28 +40,6 @@ UserSchema.methods.toJSON = function () {
     return _.pick(userObject, ['_id', 'email']);
 };
 
-
-// UserSchema.statics.findByToken = function(token){
-//     var User = this;
-//     var decoded;
-//      try{
-//         decoded = jwt.verify(token, 'abc123');
-//         console.log( 'what is decoded' ,decoded)
-       
-        
-//          }catch(e){
-//            console.log('error while trying verifying', e)
-//        }
-//     return User.findOne({
-//         '_id' : decoded._id,
-//          'token' : token
-         
-//     });
-    
- 
-// }
-
-
 function generateToken(_id) {
    
     console.log('the id we are using is', _id);
@@ -88,10 +66,24 @@ async function findByToken(token){
     });
     console.log('the response is', response);
     return response;
-    
+}
+UserSchema.pre('save', function(next) {
+        let user = this;
+        if(user.isModified(user.password)){
+           bcrypt.genSalt(10, (err, salt) =>{
+                bcrypt.hash(UserModel.password, salt, (err, hash) =>{
+                    hashPassword = hash;
+                    next();
+                });
+            })
+        }else{
+            next();
+        }
+    });
+  
     
       
-}
+
 
 const UserModel = mongoose.model('User', UserSchema)
 
